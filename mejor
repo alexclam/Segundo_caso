@@ -1,0 +1,41 @@
+mejor <- function(estado, resultado){
+  # Lectura de datos
+  setwd("C:/Users/USUARIO/Downloads/Calidad de Hospitales - data")
+  archivo<-read.csv("outcome-of-care-measures.csv")
+  # Revisión de la validez de estado y resultado
+  nombres <-archivo[ ,7]==estado
+  sumanombres<-sum(nombres)
+  
+  if(sumanombres==0){
+    stop("Estado invalido")
+  }
+  
+  sumaresultado<-0
+  
+  if(resultado=="ataque"){
+    sumaresultado<-1
+    resultado2<-archivo[ ,11]
+  } else if(resultado=="falla"){
+    sumaresultado<-2
+    resultado2<-archivo[ ,17]
+  } else if(resultado=="neumonia"){
+    sumaresultado<-3
+    resultado2<-archivo[ ,23]
+  }
+  
+  if(sumaresultado==0){
+    stop("Resultado inválido")
+  }
+  # Regresa el nombre del hospital con la tasa más baja de mortalidad de 30 días
+  if(resultado=="ataque"){
+    resultado2<-as.numeric(resultado2) 
+  }
+  y<-as.vector(subset(resultado2,archivo$State==estado))
+  yy<-y[]!="Not Available"
+  y2<-as.numeric(subset(y,yy==TRUE))
+  y2<-sort(y2)
+  y2<-as.numeric(unique(y2))
+  y2<-y2[1]
+  mejor<-as.vector(subset(archivo$Hospital.Name,archivo$State==estado & resultado2==y2))
+  mejor
+}
