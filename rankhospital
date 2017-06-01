@@ -1,0 +1,51 @@
+rankhospital <- function(estado, resultado, num = "mejor") {
+  # Lectura de datos
+  setwd("C:/Users/USUARIO/Downloads/Calidad de Hospitales - data")
+  archivo<-read.csv("outcome-of-care-measures.csv")
+  # Revisión de la validez de estado y resultado
+  nombres <-archivo[ ,7]==estado
+  sumanombres<-sum(nombres)
+  
+  if(sumanombres==0){
+    stop("Estado invalido")
+  }
+  
+  sumaresultado<-0
+  
+  if(resultado=="ataque"){
+    sumaresultado<-1
+    resultado2<-archivo[ ,11]
+  } else if(resultado=="falla"){
+    sumaresultado<-2
+    resultado2<-archivo[ ,17]
+  } else if(resultado=="neumonia"){
+    sumaresultado<-3
+    resultado2<-archivo[ ,23]
+  } 
+  if(sumaresultado==0){
+    stop("Resultado inválido")
+  }
+  # Regresa el nombre del hospital con el puesto dado de la tasa más
+  # baja de mortalidad de 30 días 
+  y<-as.vector(subset(resultado2,archivo$State==estado))
+  yy<-y[]!="Not Available"
+  y2<-as.numeric(subset(y,yy==TRUE))
+  longitud<-y2
+  if(num=="mejor"){
+    num<-1
+  }
+  if(num=="peor"){
+    num<-as.numeric(length(longitud))
+  }  
+  y2<-sort(y2)
+  y2<-y2[num]
+  rank<-as.vector(subset(archivo$Hospital.Name,archivo$State==estado & resultado2==y2))
+  longitud<-as.numeric(length(longitud))
+  condicion<-num>longitud
+  if(condicion==T){
+    rank<-NA
+  }
+  rank<-sort(rank)
+  rank<-rank[1]
+  print(rank)
+} 
