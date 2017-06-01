@@ -1,0 +1,54 @@
+rankingcompleto <- function(resultado, num = "mejor"){
+  # Lectura de datos
+  setwd("C:/Users/USUARIO/Downloads/Calidad de Hospitales - data")
+  archivo<-read.csv("outcome-of-care-measures.csv")
+  # Revisión de la validez de estado y resultado
+  sumaresultado<-0
+  if(resultado=="ataque"){
+    sumaresultado<-1
+    resultado2<-archivo[ ,11]
+  } else if(resultado=="falla"){
+    sumaresultado<-2
+    resultado2<-archivo[ ,17]
+  } else if(resultado =="neumonia"){
+    sumaresultado<-3
+    resultado2<-archivo[ ,23]
+  } 
+  if(sumaresultado==0){
+    stop("Resultado inválido")
+  }
+  if(num==""){
+    num<-"mejor"
+  }
+  # Para cada estado, encuentra el hospital con la posición dada.
+  # Regresa un data frame con el nombre del hospital y la abreviatura
+  # del nombre del estado al que pertenece.
+  if(resultado=="ataque"){
+    resultado2<-as.numeric(resultado2) 
+  }
+  estadosarchivo<-levels(archivo$State)
+  hospital<-c()
+  estado<-c()
+  for(x in 1:54){
+    unestado<-estadosarchivo[x]
+    estado<-c(estado,unestado)
+    y<-as.vector(subset(resultado2,archivo$State==unestado))
+    yy<-y[]!="Not Available"
+    y2<-as.numeric(subset(y,yy==TRUE))
+    longitud<-y2
+    if(num=="mejor"){
+      num<-1
+    }
+    if(num=="peor"){
+      num<-as.numeric(length(longitud))
+    }  
+    y3<-sort(y2)
+    y4<-y3[num]
+    hospitalactual<-as.vector(subset(archivo$Hospital.Name,archivo$State==unestado & resultado2==y4))
+    hospitalactual<-sort(hospitalactual)
+    hospitalactual<-hospitalactual[1]
+    hospital<-c(hospital,hospitalactual)
+  }
+  final<-as.data.frame(cbind(hospital,estado))
+  print(final)
+} 
